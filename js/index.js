@@ -9,99 +9,52 @@ let diagram = null
 
 document.addEventListener("DOMContentLoaded", function () {
 
-    // g.ingresarVertices("A")
-    // g.ingresarVertices("B")
-    // g.ingresarVertices("C")
-    // g.ingresarVertices("D")
-    // g.ingresarVertices("E")
-    // g.ingresarVertices("F")
+    diagram = $(go.Diagram, "diagram")
 
-    // g.ingresarArista("A", "B", 0)
-    // g.ingresarArista("A", "D", 0)
-    // g.ingresarArista("A", "C", 1)
-    // g.ingresarArista("B", "D", 1)
-    // g.ingresarArista("B", "E", 0)
-    // g.ingresarArista("C", "D", 1)
-    // g.ingresarArista("C", "E", 1)
-    // g.ingresarArista("C", "F", 0)
-    // g.ingresarArista("D", "D", 0)
-    // g.ingresarArista("D", "D", 1)
-    // g.ingresarArista("E", "E", 1)
-    // g.ingresarArista("E", "E", 0)
-    // g.ingresarArista("F", "F", 0)
-    // g.ingresarArista("F", "F", 1)
+    document.querySelector("#a1").addEventListener("click", function () {
+        g.reiniciarGrafo()
+        g.ingresarVertices("A")
+        g.ingresarVertices("B")
+        g.ingresarVertices("C")
+        g.getVertice("C").SetEstadoFinal(true)
 
-    // g.getVertice("F").SetEstadoFinal(true)
-    // g.getVertice("E").SetEstadoFinal(true)
+        g.ingresarArista("A", "A", 1)
+        g.ingresarArista("A", "A", 0)
+        g.ingresarArista("A", "B", 0)
+        g.ingresarArista("B", "C", 0)
+        mostrar()
+    })
 
+    document.querySelector("#a2").addEventListener("click", function () {
+        g.reiniciarGrafo()
+        g.ingresarVertices("A")
+        g.ingresarVertices("B")
+        g.ingresarVertices("C")
+        g.ingresarVertices("D")
+        g.ingresarVertices("E")
+        g.ingresarVertices("F")
+        g.ingresarVertices("G")
+        g.ingresarVertices("H")
+        g.ingresarVertices("I")
+        g.ingresarVertices("J")
+        g.getVertice("J").SetEstadoFinal(true)
 
-    // let g = new Grafo()
-
-    // g.ingresarVertices("A")
-    // g.ingresarVertices("B")
-    // g.ingresarVertices("C")
-    // g.getVertice("C").SetEstadoFinal(true)
-
-    // g.ingresarArista("A", "A", 1)
-    // g.ingresarArista("A", "A", 0)
-    // g.ingresarArista("A", "B", 0)
-    // g.ingresarArista("B", "C", 0)
-
-
-    // g.AFNDaAFDDinamico()
-
-
-    g.ingresarVertices("A")
-    g.ingresarVertices("B")
-    g.ingresarVertices("C")
-    g.ingresarVertices("D")
-    g.ingresarVertices("E")
-    g.ingresarVertices("F")
-    g.ingresarVertices("G")
-    g.ingresarVertices("H")
-    g.ingresarVertices("I")
-    g.ingresarVertices("J")
-
-    g.ingresarArista("A", "B", 0)
-    g.ingresarArista("B", "C", "")
-    g.ingresarArista("C", "D", "")
-    g.ingresarArista("C", "D", 0)
-    g.ingresarArista("D", "E", "")
-    g.ingresarArista("E", "F", "")
-    g.ingresarArista("E", "H", "")
-    g.ingresarArista("F", "G", 0)
-    g.ingresarArista("H", "I", 1)
-    g.ingresarArista("G", "J", "")
-    g.ingresarArista("I", "J", "")
-
-    g.getVertice("J").SetEstadoFinal(true)
-
-    //   g.buscarHastaDondeLlegaL("A", 0)
-    // console.log( g.buscarHastaDondeLlegaL("A", 0) )
-    // g.estadosAuxiliar = []
-    // console.log( g.buscarHastaDondeLlegaL("C", 1) )
-    // console.log( g.buscarHastaDondeLlegaL("F", 1) )
-    // console.log( g.buscarHastaDondeLlegaL("H", 1) )
-
-    // g.AFNDaAFD2DinamicoLambda()
-
-    //   g.ingresarVertices("A")
-    // g.ingresarVertices("B")
-    // g.ingresarVertices("C")
-    // g.getVertice("C").SetEstadoFinal(true)
-
-    // g.ingresarArista("A", "A", 1)
-    // g.ingresarArista("A", "A", 0)
-    // g.ingresarArista("A", "B", 0)
-    // g.ingresarArista("B", "C", 0)
-
-    // g.AFNDaAFDDinamico()
+        g.ingresarArista("A", "B", 0)
+        g.ingresarArista("B", "C", "")
+        g.ingresarArista("C", "D", "")
+        g.ingresarArista("C", "D", 0)
+        g.ingresarArista("D", "E", "")
+        g.ingresarArista("E", "F", "")
+        g.ingresarArista("E", "H", "")
+        g.ingresarArista("F", "G", 0)
+        g.ingresarArista("H", "I", 1)
+        g.ingresarArista("G", "J", "")
+        g.ingresarArista("I", "J", "")
+        mostrar()
+    })
 
 
-
-    init()
-
-    document.querySelector("#convert").addEventListener("click", function () {
+    document.querySelector("#convertir").addEventListener("click", function () {
         const { estados, transiciones } = g.AFNDaAFD2DinamicoLambda()
        
         diagram.nodeTemplate = $(go.Node, "Auto",
@@ -164,9 +117,7 @@ function createArrayOfLinksGrafo() {
 
 }
 
-function init() {
-
-    diagram = $(go.Diagram, "diagram")
+function mostrar() {
    
     diagram.model = $(go.GraphLinksModel, {
         nodeDataArray: createArrayOfNodesGrafo(),

@@ -87,6 +87,7 @@ class Grafo {
         this.repetidos = 0
         this.obstruidos = []
         this.aristasAmplitud = []
+        this.estadosAuxiliar = []
     }
 
     getAristas() {
@@ -262,7 +263,6 @@ class Grafo {
     buscarHastaDondeLlegaL(estado, peso, pesoGastado = false) {
         //tomo el estado inicial
         let estadoInicial = this.getVertice(estado)
-        // console.log(estadoInicial, estadoInicial.dato, pesoGastado)
 
         //tomo las aristas que salen del estado inicial con el peso
         let aristasEstado = []
@@ -272,7 +272,7 @@ class Grafo {
             }
         })
 
-        //* si no hay aristas con ese peso buscamos un lambda
+        //* NO HAY ARISTAS CON ESE PESO *//
         if(aristasEstado.length === 0){
             aristasEstado = []
             this.listaAristas.forEach(arista => {
@@ -281,41 +281,41 @@ class Grafo {
                 }
             })
             
-            // console.log('tiene lambda')
-            // console.log(aristasEstado)
-
             if(aristasEstado.length === 0){
 
                 if(pesoGastado) {
-                    // console.log('no hay lambda y ya gaste todos los pesos')
+                    //aca
                     this.estadosAuxiliar.push(estadoInicial.dato)
-                    // console.log("estados auxiliar", this.estadosAuxiliar)
-                } else {
-                    // console.log('no hay lambda y no puedo gastar mas pesos')
-                    // this.buscarHastaDondeLlegaL(estadoInicial.dato, peso, peso)
-                }
+                } 
 
             } else {
-                // console.log('tiene lambda', estadoInicial.dato, pesoGastado)
                 aristasEstado.forEach(arista => {
                     let nuevoestado = arista.Destino.GetDato()
+                    
+                    //busco aristas nuevo estado que sean de ese peso y distinto de lambda
+                    let aristasNuevoEstado = []
+                    this.listaAristas.forEach(arista => {
+                        if (arista.Origen.GetDato() == nuevoestado && arista.GetPeso() !== peso && arista.GetPeso() !== '') {
+                            aristasNuevoEstado.push(arista)
+                        }
+                    })
+                    if(aristasNuevoEstado.length !== 0){
+                        this.estadosAuxiliar.push(nuevoestado)
+                    }
                     this.buscarHastaDondeLlegaL(nuevoestado, peso, pesoGastado)
+
                 })
             }
-
-            
             
         } else {
-            //* si hay aristas con ese peso
+            //* SI HAY ARISTAS CON ESE PESO *//
             aristasEstado.forEach(arista => {
                 if(!pesoGastado) {
                     let nuevoestado = arista.Destino.GetDato()
                 
                     this.buscarHastaDondeLlegaL(nuevoestado, peso, true)
                 } else {
-                    // console.log('ya no puedo gastar mas pesos')
                     this.estadosAuxiliar.push(estadoInicial.dato)
-                    // console.log("estados auxiliar", this.estadosAuxiliar)
     
                     //* busco si hay un lambda
                     aristasEstado = []
@@ -325,24 +325,17 @@ class Grafo {
                         }
                     })
     
-                    if(aristasEstado.length === 0){
-                        // console.log('no hay lambda')
-                    } else {
-                        // console.log('tiene lambda')
+                    if(aristasEstado.length !== 0){
                         aristasEstado.forEach(arista => {
                             let nuevoEstado = arista.Destino.GetDato()
-                            // console.log(nuevoEstado)
                             this.buscarHastaDondeLlegaL(nuevoEstado, peso, true)
                         })
                     }
     
-                    
                 }
             })
         }
-
         return this.estadosAuxiliar
-
     }
 
      
@@ -351,10 +344,8 @@ class Grafo {
         let estadosAuxiliar = []
         
         estados.forEach(estado => {
-
             let datoEstado = estado.dato
             estadosAuxiliar.push( this.buscarHastaDondeLlegaL(datoEstado, peso, false) )
-
         })
 
         let estadosRetornar = [[]]
@@ -401,8 +392,6 @@ class Grafo {
             let con0 = this.buscarHastaDondeLlegaTodos(estadosPila[i], 0)
             let con1 = this.buscarHastaDondeLlegaTodos(estadosPila[i], 1)
 
-            // console.log("hay repetidos", this.hayRepetidos(con0), this.hayRepetidos(con1))
-
             con0 = this.eliminarRepetidos(con0)
             con1 = this.eliminarRepetidos(con1)
 
@@ -435,11 +424,6 @@ class Grafo {
 
             i++
         }
-
-        // console.log({
-        //     estadosPila,
-        //     aristas
-        // })
 
         let estadosFinalesOriginal = this.getListaVertices().filter(estado => estado.GetEstadoFinal())
         let estadosFinalesNombres = estadosFinalesOriginal.map(estado => estado.GetDato())
@@ -533,112 +517,6 @@ class Grafo {
         return false
     }
 
-    //sin lambda
-    AFNDaAFD() {
-
-        let estadosPila = []
-        let aristas = []
-
-        let estadoInicial = this.listaVertices[0]
-        estadosPila.push([estadoInicial])
-
-        let con0 = this.buscarHastaDondeLlega(estadosPila[0], 0)
-        let con1 = this.buscarHastaDondeLlega(estadosPila[0], 1)
-
-        console.log(estadosPila.length)
-
-        console.log(0, con0)
-        console.log(1, con1)
-
-
-        con0.forEach(estado => {
-            if (!this.yaEstaEnLaLista(estado, estadosPila)) {
-                estadosPila.push(estado)
-            }
-            aristas.push({
-                Origen: [estadoInicial],
-                Destino: estado,
-                Peso: 0
-            })
-        })
-
-        con1.forEach(estado => {
-            if (!this.yaEstaEnLaLista(estado, estadosPila)) {
-                estadosPila.push(estado)
-            }
-            aristas.push({
-                Origen: [estadoInicial],
-                Destino: estado,
-                Peso: 1
-            })
-        })
-
-        console.log(estadosPila.length)
-
-        con0 = this.buscarHastaDondeLlega(estadosPila[1], 0)
-        con1 = this.buscarHastaDondeLlega(estadosPila[1], 1)
-
-        console.log(0, con0)
-        console.log(1, con1)
-
-        con0.forEach(estado => {
-            if (!this.yaEstaEnLaLista(estado, estadosPila)) {
-                estadosPila.push(estado)
-            }
-            aristas.push({
-                Origen: estadosPila[1],
-                Destino: estado,
-                Peso: 0
-            })
-        })
-
-        con1.forEach(estado => {
-            if (!this.yaEstaEnLaLista(estado, estadosPila)) {
-                estadosPila.push(estado)
-            }
-            aristas.push({
-                Origen: estadosPila[1],
-                Destino: estado,
-                Peso: 1
-            })
-        })
-
-        console.log(estadosPila.length)
-
-        con0 = this.buscarHastaDondeLlega(estadosPila[2], 0)
-        con1 = this.buscarHastaDondeLlega(estadosPila[2], 1)
-
-        console.log(0, con0)
-        console.log(1, con1)
-
-        con0.forEach(estado => {
-            if (!this.yaEstaEnLaLista(estado, estadosPila)) {
-                estadosPila.push(estado)
-            }
-            aristas.push({
-                Origen: estadosPila[2],
-                Destino: estado,
-                Peso: 0
-            })
-        })
-
-        con1.forEach(estado => {
-            if (!this.yaEstaEnLaLista(estado, estadosPila)) {
-                estadosPila.push(estado)
-            }
-            aristas.push({
-                Origen: estadosPila[2],
-                Destino: estado,
-                Peso: 1
-            })
-        })
-
-        console.log(estadosPila.length)
-        console.log(estadosPila)
-        console.log(aristas)
-
-    }
-
     AFNDaAFDDinamico() {
         let estadosPila = []
         let aristas = []
@@ -650,9 +528,6 @@ class Grafo {
         while (i < estadosPila.length) {
             let con0 = this.buscarHastaDondeLlega(estadosPila[i], 0, false)
             let con1 = this.buscarHastaDondeLlega(estadosPila[i], 1, false)
-
-            console.log("con0",con0)
-            console.log("con1",con1)
 
             con0.forEach(estado => {
                 if (!this.yaEstaEnLaLista(estado, estadosPila)) {
@@ -723,117 +598,6 @@ class Grafo {
             transiciones: transicionesNuevas
         }
     }
-
-    
-
-
-    // AFNDaAFDDinamicoLAMBDA() {
-    //     let estadosPila = [];
-    //     let aristas = [];
-      
-    //     let estadoInicial = this.listaVertices[0];
-    //     estadosPila.push([estadoInicial]);
-      
-    //     let i = 0;
-    //     while (i < estadosPila.length) {
-    //       let con0 = this.buscarHastaDondeLlega(estadosPila[i], 0, false);
-    //       let con1 = this.buscarHastaDondeLlega(estadosPila[i], 1, false);
-      
-    //       let cerradura0 = this.cerrarConLambda(con0);
-    //       let cerradura1 = this.cerrarConLambda(con1);
-      
-    //       cerradura0.forEach(estado => {
-    //         if (!this.yaEstaEnLaLista(estado, estadosPila)) {
-    //           estadosPila.push(estado);
-    //         }
-    //         aristas.push({
-    //           Origen: estadosPila[i],
-    //           Destino: estado,
-    //           Peso: 0
-    //         });
-    //       });
-      
-    //       cerradura1.forEach(estado => {
-    //         if (!this.yaEstaEnLaLista(estado, estadosPila)) {
-    //           estadosPila.push(estado);
-    //         }
-    //         aristas.push({
-    //           Origen: estadosPila[i],
-    //           Destino: estado,
-    //           Peso: 1
-    //         });
-    //       });
-      
-    //       i++;
-    //     }
-      
-    //     let estadosFinalesOriginal = this.getListaVertices().filter(estado => estado.GetEstadoFinal());
-    //     let estadosFinalesNombres = estadosFinalesOriginal.map(estado => estado.GetDato());
-      
-    //     let estadosNuevos = [];
-    //     estadosPila.forEach(estado => {
-    //       let esFinal = false;
-    //       estado.forEach(e => {
-    //         if (estadosFinalesNombres.includes(e.dato)) {
-    //           esFinal = true;
-    //         }
-    //       });
-      
-    //       let nombre = "";
-    //       estado.forEach(e => {
-    //         nombre += e.dato;
-    //       });
-    //       estadosNuevos.push({
-    //         key: nombre,
-    //         name: nombre,
-    //         esEstadoFinal: esFinal
-    //       });
-    //     });
-      
-    //     let transicionesNuevas = [];
-    //     aristas.forEach(transicion => {
-    //       let origen = "";
-    //       let destino = "";
-    //       transicion.Origen.forEach(e => {
-    //         origen += e.dato;
-    //       });
-    //       transicion.Destino.forEach(e => {
-    //         destino += e.dato;
-    //       });
-    //       if (transicion.Peso !== "") {
-    //         transicionesNuevas.push({ from: origen, to: destino, text: `${transicion.Peso}` });
-    //       }
-    //     });
-      
-    //     return {
-    //       estados: estadosNuevos,
-    //       transiciones: transicionesNuevas
-    //     };
-    //   }
-      
-    //   cerrarConLambda(estado) {
-    //     let pila = [...estado];
-    //     let cerradura = [...estado];
-      
-    //     while (pila.length > 0) {
-    //       let actual = pila.pop();
-    //       let transicionesLambda = this.buscarHastaDondeLlega(actual, "", true);
-      
-    //       for (let estadoLambda of transicionesLambda) {
-    //         if (!cerradura.includes(estadoLambda)) {
-    //           cerradura.push(estadoLambda);
-    //           pila.push(estadoLambda);
-    //         }
-    //       }
-    //     }
-      
-    //     return cerradura;
-    //   }
-      
-
-
-
-
 
 }
 
