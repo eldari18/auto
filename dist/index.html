@@ -14,30 +14,30 @@
 <script defer src="main.js"></script></head>
 <body>
 
-  <nav class="navbar navbar-expand-lg bg-light">
+  <nav class="navbar navbar-dark navbar-expand-lg bg-dark">
     <div class="container-fluid">
-    <span class="navbar-brand mb-0 h1"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/42/Logo_de_la_Universidad_de_Caldas.svg/1200px-Logo_de_la_Universidad_de_Caldas.svg.png" alt="Logo Ucaldas" width="30"></> Autómatas</span>
+    <span class="navbar-brand mb-0 h1 text-white"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/42/Logo_de_la_Universidad_de_Caldas.svg/1200px-Logo_de_la_Universidad_de_Caldas.svg.png" alt="Logo Ucaldas" width="30" class="me-4"></> Autómatas</span>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav">
-          <li class="nav-item mx-4">
-            <button id="a1" class="btn btn-primary">Autómata 1</button>
+          <li class="nav-item mx-4 my-2">
+            <button id="a1" class="btn btn-outline-primary">Autómata 1</button>
           </li>
-          <li class="nav-item mx-4">
-            <button id="a2" class="btn btn-primary">Autómata 2</button>
+          <li class="nav-item mx-4 my-2">
+            <button id="a2" class="btn btn-outline-primary">Autómata 2</button>
           </li>
-          <li class="nav-item mx-4">
-            <button id="convertir" class="btn btn-success">Convertir a AFD</button>
+          <li class="nav-item mx-4 my-2">
+            <button id="convertir" class="btn btn-outline-warning">Convertir a AFD</button>
           </li>
         </ul>
       </div>
     </div>
   </nav>
 
-  <div class="py-4 px-4" id="estadosFinales"><span class="fw-bold">Estados finales: </span> </div>
+  <div class="py-4 px-4 text-white bg-dark" id="estadosFinales"><span class="fw-bold">Estados finales del autómata: </span> </div>
 
-    <div id="diagram" style="width:100%; height:500px;" class="bg-dark"></div>
+    <div id="diagram" style="width:100%; height:510px;" class="bg-dark"></div>
 </body>
 </html>     

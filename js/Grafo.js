@@ -256,10 +256,7 @@ class Grafo {
         return estadosFinales
     }
 
-    //usar el metodo buscarHastaDondeLlegaL teniendo en cuenta que le puedo pasar un arreglo de estados
-    //y que me devuelva un arreglo de estados
-
-    //* gpt
+    //* Hasta donde llega un estado con lambda
     buscarHastaDondeLlegaL(estado, peso, pesoGastado = false) {
         //tomo el estado inicial
         let estadoInicial = this.getVertice(estado)
@@ -338,7 +335,7 @@ class Grafo {
         return this.estadosAuxiliar
     }
 
-     
+    //* varios estados hasta donde llegan con lambda
     buscarHastaDondeLlegaTodos(estados, peso) {
         this.estadosAuxiliar = [] 
         let estadosAuxiliar = []
@@ -358,14 +355,14 @@ class Grafo {
         return estadosRetornar
     }
 
-    //metodo que me dice si hay elementos repetidos en un arreglo de arreglos de vertices usando lodash
+    //* metodo que me dice si hay elementos repetidos en un arreglo de arreglos de vertices usando lodash
     hayRepetidos(arreglo) {
         arreglo = _.flatten(arreglo)
         let repetidos = _.uniq(arreglo)
         return arreglo.length !== repetidos.length
     }
 
-    // metodo que me verifica si hay repetidos y si los hay devuelve un arreglo sin repetidos y si no hay repetidos devuelve el mismo arreglo
+    //* metodo que me verifica si hay repetidos y si los hay devuelve un arreglo sin repetidos y si no hay repetidos devuelve el mismo arreglo
     eliminarRepetidos(arreglo) {
         if(this.hayRepetidos(arreglo)) {
             //flat
@@ -378,7 +375,7 @@ class Grafo {
         }
     }
 
-    
+    //* metodo que forma el AFD que tiene lambda originalmente
     AFNDaAFD2DinamicoLambda() {
         let estadosPila = []
         let aristas = []
@@ -474,6 +471,7 @@ class Grafo {
         }
     }
 
+    //* me dice hasta donde llega un estado con un peso
     buscarHastaDondeLlega(estado, peso) {
         if (estado.length === 1) {
             let aristasEstado = []
@@ -507,7 +505,7 @@ class Grafo {
         }
     }
     
-
+    //* le paso lista y un estado y me dice si el estado esta en la lista usando lodash
     yaEstaEnLaLista(estado, lista) {
         for (let i = 0;i < lista.length;i++) {
             if (_.isEqual(estado, lista[i])) {
@@ -517,6 +515,7 @@ class Grafo {
         return false
     }
 
+    //* metodo que forma el AFD que no tiene lambda originalmente
     AFNDaAFDDinamico() {
         let estadosPila = []
         let aristas = []

@@ -61,13 +61,11 @@ document.addEventListener("DOMContentLoaded", function () {
         $(go.Shape, "Circle", { fill: "#00FFB5", strokeWidth: 2, stroke: "black" }),
         $(go.TextBlock, { margin: 8, font: "bold 12 px sans-serif" }, new go.Binding("text", "name"))
         )
-        // Configurar el enlace template
         diagram.linkTemplate =
         go.GraphObject.make(go.Link,
         {
-            curve: go.Link.Bezier, // Establecer la curva del enlace como Bezier
-            // ... otras propiedades y configuraciones del enlace ...
-            routing: go.Link.AvoidsNodes, // enrutamiento de enlace evita nodos
+            curve: go.Link.Bezier, 
+            routing: go.Link.AvoidsNodes, 
         },
         go.GraphObject.make(go.Shape, { stroke: "white" }),
         go.GraphObject.make(go.Shape, { toArrow: "OpenTriangle", stroke: "white", fill: "white" }),
@@ -85,8 +83,12 @@ document.addEventListener("DOMContentLoaded", function () {
                 estadosFinales.push(estado.name)
             }
         })
+        let text = ""
+        estadosFinales.forEach(estado => {
+            text += `${estado} `
+        })
         const texto = document.querySelector("#estadosFinales")
-        texto.innerHTML = `<span class="fw-bold">Estados finales:</span> ${estadosFinales}`
+        texto.innerHTML = `<span class="fw-bold">Estados finales del autómata:</span> ${text}`
 
     })
 })
@@ -125,9 +127,9 @@ function mostrar() {
     })
 
     diagram.layout = $(go.LayeredDigraphLayout, {
-        direction: 0,  // dirección en la que se ubican las capas (0 = hacia arriba, 90 = hacia la derecha, etc.)
-        layerSpacing: 50,  // distancia vertical entre capas de nodos
-        columnSpacing: 50  // distancia horizontal entre nodos en diferentes capas
+        direction: 0,  
+        layerSpacing: 50,  
+        columnSpacing: 50 
     })
 
 
@@ -135,13 +137,11 @@ function mostrar() {
         $(go.Shape, "Circle", { fill: "#00FFB5", strokeWidth: 2, stroke: "black" }),
         $(go.TextBlock, { margin: 8, font: "bold 12 px sans-serif" }, new go.Binding("text", "name"))
     )
-    // Configurar el enlace template
     diagram.linkTemplate =
     go.GraphObject.make(go.Link,
       {
-        curve: go.Link.Bezier, // Establecer la curva del enlace como Bezier
-        // ... otras propiedades y configuraciones del enlace ...
-        routing: go.Link.AvoidsNodes, // enrutamiento de enlace evita nodos
+        curve: go.Link.Bezier, 
+        routing: go.Link.AvoidsNodes, 
       },
       go.GraphObject.make(go.Shape, { stroke: "white" }),
       go.GraphObject.make(go.Shape, { toArrow: "OpenTriangle", stroke: "white", fill: "white" }),
@@ -149,8 +149,12 @@ function mostrar() {
     );
   
     const estadosFinales = g.getEstadosFinales()
+    let text = ""
+    estadosFinales.forEach(estado => {
+        text += `${estado} `
+    })
     const texto = document.querySelector("#estadosFinales")
-    texto.innerHTML = `<span class="fw-bold">Estados finales:</span> ${estadosFinales}`
+    texto.innerHTML = `<span class="fw-bold">Estados finales del autómata:</span> ${text}`
 }
 
 
