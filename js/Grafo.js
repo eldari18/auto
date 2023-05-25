@@ -207,8 +207,10 @@ class Grafo {
         if (posicionActual == cadenaArr.length) {
             if (estadoActual.estadoFinal) {
                 console.log('cadena válida')
+                alert('cadena válida')
             } else {
                 console.log('cadena inválida')
+                alert('cadena inválida')
             }
             return
         }
@@ -256,12 +258,14 @@ class Grafo {
         return estadosFinales
     }
 
-    //* Hasta donde llega un estado con lambda
+    //* Hasta donde llega UN SOLO estado con un peso *//
+    //* por ejemplo: hasta donde llega el estado A con el peso 1 *//
+    //* por ejemplo: hasta donde llega el estado A con el peso '' <-- LAMBDA *//
     buscarHastaDondeLlegaL(estado, peso, pesoGastado = false) {
-        //tomo el estado inicial
+        //* Tomo el estado
         let estadoInicial = this.getVertice(estado)
 
-        //tomo las aristas que salen del estado inicial con el peso
+        //* tomo las aristas que salen del estado con el peso
         let aristasEstado = []
         this.listaAristas.forEach(arista => {
             if (arista.Origen.GetDato() == estadoInicial.dato && arista.GetPeso() === peso) {
@@ -269,8 +273,11 @@ class Grafo {
             }
         })
 
-        //* NO HAY ARISTAS CON ESE PESO *//
+        //* condiciones
+
+        //* SI EL ESTADO NO TIENE ARISTAS CON ESE PESO *//
         if(aristasEstado.length === 0){
+            //* TOMO LAS ARISTAS QUE SALEN DEL ESTADO CON LAMBDA *//
             aristasEstado = []
             this.listaAristas.forEach(arista => {
                 if (arista.Origen.GetDato() == estadoInicial.dato && arista.GetPeso() === '') {
@@ -278,64 +285,100 @@ class Grafo {
                 }
             })
             
+            //* SI EL ESTADO NO TIENE ARISTAS CON LAMBDA *//
             if(aristasEstado.length === 0){
 
+                //* SI YA GASTÓ EL PESO *//
                 if(pesoGastado) {
-                    //aca
                     this.estadosAuxiliar.push(estadoInicial.dato)
                 } 
 
+            //* SI EL ESTADO SI TIENE ARISTAS CON LAMBDA *//
             } else {
+                //* RECORRO LAS ARISTAS CON LAMBDA *//
                 aristasEstado.forEach(arista => {
+                    //* TOMO EL ESTADO DESTINO
                     let nuevoestado = arista.Destino.GetDato()
                     
-                    //busco aristas nuevo estado que sean de ese peso y distinto de lambda
+                    //* BUSCO ARISTAS QUE SALGAN DEL ESTADO DESTINO CON OTRO PESO QUE NO SEA LAMBDA *//
                     let aristasNuevoEstado = []
                     this.listaAristas.forEach(arista => {
                         if (arista.Origen.GetDato() == nuevoestado && arista.GetPeso() !== peso && arista.GetPeso() !== '') {
                             aristasNuevoEstado.push(arista)
                         }
                     })
+                    //* SI EL ESTADO DESTINO NO TIENE ARISTAS CON OTRO PESO QUE NO SEA LAMBDA *//
                     if(aristasNuevoEstado.length !== 0){
+                        //* LO AGREGO*//
                         this.estadosAuxiliar.push(nuevoestado)
                     }
                     this.buscarHastaDondeLlegaL(nuevoestado, peso, pesoGastado)
-
                 })
             }
             
         } else {
-            //* SI HAY ARISTAS CON ESE PESO *//
+            //* SI EL ESTADO SI TIENE ARISTAS CON ESE PESO *//
             aristasEstado.forEach(arista => {
+                //* SI EL PESO NO ESTÁ GASTADO *//
                 if(!pesoGastado) {
                     let nuevoestado = arista.Destino.GetDato()
                 
                     this.buscarHastaDondeLlegaL(nuevoestado, peso, true)
                 } else {
+                    //* SI EL PESO ESTÁ GASTADO LO AGREGO*//
                     this.estadosAuxiliar.push(estadoInicial.dato)
     
-                    //* busco si hay un lambda
+                    //* BUSCO SI HAY ARISTAS CON LAMBDA *//
                     aristasEstado = []
                     this.listaAristas.forEach(arista => {
                         if (arista.Origen.GetDato() == estadoInicial.dato && arista.GetPeso() === '') {
                             aristasEstado.push(arista)
                         }
                     })
-    
+                    
+                    //* SI EL ESTADO TIENE ARISTAS CON LAMBDA *//
                     if(aristasEstado.length !== 0){
+                        //* RECORRO LAS ARISTAS CON LAMBDA *//
                         aristasEstado.forEach(arista => {
                             let nuevoEstado = arista.Destino.GetDato()
                             this.buscarHastaDondeLlegaL(nuevoEstado, peso, true)
                         })
                     }
-    
                 }
             })
         }
+        //* RETORNO LOS ESTADOS QUE LLEGAN CON ESE PESO *//
         return this.estadosAuxiliar
     }
 
-    //* varios estados hasta donde llegan con lambda
+    //* metodo que me dice si el automata es afnd o no
+    esAFND() {
+        let esAFND = false
+        this.listaAristas.forEach(arista => {
+            if(arista.GetPeso() === '') {
+                esAFND = true
+            }
+        })
+
+        //* si hay dos aristas con el mismo peso y el mismo origen es afnd
+        this.listaAristas.forEach(arista => {
+            let peso = arista.GetPeso()
+            let origen = arista.Origen.GetDato()
+            let aristas = []
+            this.listaAristas.forEach(arista => {
+                if(arista.GetPeso() === peso && arista.Origen.GetDato() === origen) {
+                    aristas.push(arista)
+                }
+            })
+            if(aristas.length > 1) {
+                esAFND = true
+            }
+        })
+
+        return esAFND
+    }
+
+    //* varios estados hasta donde llegan con lambda por ejemplo [A, B, C] con el peso 1
     buscarHastaDondeLlegaTodos(estados, peso) {
         this.estadosAuxiliar = [] 
         let estadosAuxiliar = []
@@ -380,24 +423,33 @@ class Grafo {
         let estadosPila = []
         let aristas = []
 
+        //* Agreggo el estado inicial a la pila de estados 
         let estadoInicial = this.listaVertices[0]
         estadosPila.push([estadoInicial])
 
+        //* tomo la pila de estados y voy a ir agregando estados hasta que no haya mas estados para agregar
         let i = 0
         while (i < estadosPila.length) {
 
+            //* busco hasta donde el estado actual llega con 0 y 1
             let con0 = this.buscarHastaDondeLlegaTodos(estadosPila[i], 0)
             let con1 = this.buscarHastaDondeLlegaTodos(estadosPila[i], 1)
 
+            //* elimino repetidos por ejemplo: [['J'], ['J']] -> [['J']]
             con0 = this.eliminarRepetidos(con0)
             con1 = this.eliminarRepetidos(con1)
 
+            //* recorro los estados a los que llega con 0 y 1 y los agrego a la pila de estados
+
             con0.forEach(estado => {
 
+                //* verifico que retorne mas de 1 estado
                 if(estado.length > 0) {
+                    //* si no esta en la pila de estados lo agrego
                     if (!this.yaEstaEnLaLista(estado, estadosPila)) {
                         estadosPila.push(estado)
                     }
+                    //* creo la arista
                     aristas.push({
                         Origen: estadosPila[i],
                         Destino: estado,
@@ -407,10 +459,14 @@ class Grafo {
             })
 
             con1.forEach(estado => {
+
+                //* verifico que retorne mas de 1 estado
                 if( estado.length > 0) {
+                    //* si no esta en la pila de estados lo agrego
                     if (!this.yaEstaEnLaLista(estado, estadosPila)) {
                         estadosPila.push(estado)
                     }
+                    //* creo la arista
                     aristas.push({
                         Origen: estadosPila[i],
                         Destino: estado,
@@ -419,12 +475,17 @@ class Grafo {
                 }
             })
 
+            //* aumento el contador
             i++
         }
 
+        //* ahora tengo que crear los estados y las transiciones para pasarle a la interfaz gráfica
+
+        //* obtengo los estados finales del automata original
         let estadosFinalesOriginal = this.getListaVertices().filter(estado => estado.GetEstadoFinal())
         let estadosFinalesNombres = estadosFinalesOriginal.map(estado => estado.GetDato())
 
+        //* creo los estados nuevos y si es final se lo asigno
         let estadosNuevos = []
         estadosPila.forEach(estado => {
 
@@ -447,10 +508,8 @@ class Grafo {
 
         })
 
-        console.log(estadosNuevos)
-
+        //* creo las transiciones nuevas y las agrego
         let transicionesNuevas = []
-
         aristas.forEach(transicion => {
             let origen = ""
             let destino = ""
@@ -464,44 +523,12 @@ class Grafo {
         })
 
         console.log(transicionesNuevas)
+        console.log(estadosNuevos)
 
+        //* retorno los estados y las transiciones
         return {
             estados: estadosNuevos,
             transiciones: transicionesNuevas
-        }
-    }
-
-    //* me dice hasta donde llega un estado con un peso
-    buscarHastaDondeLlega(estado, peso) {
-        if (estado.length === 1) {
-            let aristasEstado = []
-            this.listaAristas.forEach(arista => {
-                if ((arista.Origen.GetDato() === estado[0].GetDato()) && arista.GetPeso() === peso) {
-                    aristasEstado.push(arista)
-                }
-            })
-    
-            let estados = []
-            aristasEstado.forEach(arista => {
-                estados.push(arista.Destino)
-            })
-            return [estados]
-        } else {
-            let aristasEstado = []
-            this.listaAristas.forEach(arista => {
-                estado.forEach(estado => {
-                    if ((arista.Origen.GetDato() === estado.GetDato()) && arista.GetPeso() === peso) {
-                        aristasEstado.push(arista)
-                    }
-                })
-            })
-    
-            let estados = []
-            aristasEstado.forEach(arista => {
-                estados.push(arista.Destino)
-            })
-            
-            return [estados]
         }
     }
     
@@ -515,88 +542,122 @@ class Grafo {
         return false
     }
 
+     // //* me dice hasta donde llega un estado con un peso
+    // buscarHastaDondeLlega(estado, peso) {
+    //     if (estado.length === 1) {
+    //         let aristasEstado = []
+    //         this.listaAristas.forEach(arista => {
+    //             if ((arista.Origen.GetDato() === estado[0].GetDato()) && arista.GetPeso() === peso) {
+    //                 aristasEstado.push(arista)
+    //             }
+    //         })
+    
+    //         let estados = []
+    //         aristasEstado.forEach(arista => {
+    //             estados.push(arista.Destino)
+    //         })
+    //         return [estados]
+    //     } else {
+    //         let aristasEstado = []
+    //         this.listaAristas.forEach(arista => {
+    //             estado.forEach(estado => {
+    //                 if ((arista.Origen.GetDato() === estado.GetDato()) && arista.GetPeso() === peso) {
+    //                     aristasEstado.push(arista)
+    //                 }
+    //             })
+    //         })
+    
+    //         let estados = []
+    //         aristasEstado.forEach(arista => {
+    //             estados.push(arista.Destino)
+    //         })
+            
+    //         return [estados]
+    //     }
+    // }
+
     //* metodo que forma el AFD que no tiene lambda originalmente
-    AFNDaAFDDinamico() {
-        let estadosPila = []
-        let aristas = []
+    // AFNDaAFDDinamico() {
+    //     let estadosPila = []
+    //     let aristas = []
 
-        let estadoInicial = this.listaVertices[0]
-        estadosPila.push([estadoInicial])
+    //     let estadoInicial = this.listaVertices[0]
+    //     estadosPila.push([estadoInicial])
 
-        let i = 0
-        while (i < estadosPila.length) {
-            let con0 = this.buscarHastaDondeLlega(estadosPila[i], 0, false)
-            let con1 = this.buscarHastaDondeLlega(estadosPila[i], 1, false)
+    //     let i = 0
+    //     while (i < estadosPila.length) {
+    //         let con0 = this.buscarHastaDondeLlega(estadosPila[i], 0, false)
+    //         let con1 = this.buscarHastaDondeLlega(estadosPila[i], 1, false)
 
-            con0.forEach(estado => {
-                if (!this.yaEstaEnLaLista(estado, estadosPila)) {
-                    estadosPila.push(estado)
-                }
-                aristas.push({
-                    Origen: estadosPila[i],
-                    Destino: estado,
-                    Peso: 0
-                })
-            })
+    //         con0.forEach(estado => {
+    //             if (!this.yaEstaEnLaLista(estado, estadosPila)) {
+    //                 estadosPila.push(estado)
+    //             }
+    //             aristas.push({
+    //                 Origen: estadosPila[i],
+    //                 Destino: estado,
+    //                 Peso: 0
+    //             })
+    //         })
 
-            con1.forEach(estado => {
-                if (!this.yaEstaEnLaLista(estado, estadosPila)) {
-                    estadosPila.push(estado)
-                }
-                aristas.push({
-                    Origen: estadosPila[i],
-                    Destino: estado,
-                    Peso: 1
-                })
-            })
+    //         con1.forEach(estado => {
+    //             if (!this.yaEstaEnLaLista(estado, estadosPila)) {
+    //                 estadosPila.push(estado)
+    //             }
+    //             aristas.push({
+    //                 Origen: estadosPila[i],
+    //                 Destino: estado,
+    //                 Peso: 1
+    //             })
+    //         })
 
-            i++
-        }
+    //         i++
+    //     }
 
-        let estadosFinalesOriginal = this.getListaVertices().filter(estado => estado.GetEstadoFinal())
-        let estadosFinalesNombres = estadosFinalesOriginal.map(estado => estado.GetDato())
+    //     let estadosFinalesOriginal = this.getListaVertices().filter(estado => estado.GetEstadoFinal())
+    //     let estadosFinalesNombres = estadosFinalesOriginal.map(estado => estado.GetDato())
 
-        let estadosNuevos = []
-        estadosPila.forEach(estado => {
+    //     let estadosNuevos = []
+    //     estadosPila.forEach(estado => {
 
-            let esFinal = false
-            estado.forEach(e => {
-                if (estadosFinalesNombres.includes(e.dato)) {
-                    esFinal = true
-                }
-            })
+    //         let esFinal = false
+    //         estado.forEach(e => {
+    //             if (estadosFinalesNombres.includes(e.dato)) {
+    //                 esFinal = true
+    //             }
+    //         })
 
-            let nombre = ""
-            estado.forEach(e => {
-                nombre += e.dato
-            })
-            estadosNuevos.push({
-                key: nombre,
-                name: nombre,
-                esEstadoFinal: esFinal
-            })
+    //         let nombre = ""
+    //         estado.forEach(e => {
+    //             nombre += e.dato
+    //         })
+    //         estadosNuevos.push({
+    //             key: nombre,
+    //             name: nombre,
+    //             esEstadoFinal: esFinal
+    //         })
 
-        })
+    //     })
 
-        let transicionesNuevas = []
+    //     let transicionesNuevas = []
 
-        aristas.forEach(transicion => {
-            let origen = ""
-            let destino = ""
-            transicion.Origen.forEach(e => {
-                origen += e.dato
-            })
-            transicion.Destino.forEach(e => {
-                destino += e.dato
-            })
-            transicionesNuevas.push({ from: origen, to: destino, text: `${transicion.Peso}` })
-        })
+    //     aristas.forEach(transicion => {
+    //         let origen = ""
+    //         let destino = ""
+    //         transicion.Origen.forEach(e => {
+    //             origen += e.dato
+    //         })
+    //         transicion.Destino.forEach(e => {
+    //             destino += e.dato
+    //         })
+    //         transicionesNuevas.push({ from: origen, to: destino, text: `${transicion.Peso}` })
+    //     })
 
-        return {
-            estados: estadosNuevos,
-            transiciones: transicionesNuevas
-        }
-    }
+    //     return {
+    //         estados: estadosNuevos,
+    //         transiciones: transicionesNuevas
+    //     }
+    // }
 
 }
 

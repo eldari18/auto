@@ -50,12 +50,25 @@ document.addEventListener("DOMContentLoaded", function () {
         g.ingresarArista("H", "I", 1)
         g.ingresarArista("G", "J", "")
         g.ingresarArista("I", "J", "")
+
         mostrar()
     })
 
-
     document.querySelector("#convertir").addEventListener("click", function () {
         const { estados, transiciones } = g.AFNDaAFD2DinamicoLambda()
+
+        //* AHORA EL NUEVO GRAFO ES EL AUTÓMATA FINITO DETERMINISTA
+        g.reiniciarGrafo()
+        estados.forEach(estado => {
+            g.ingresarVertices(estado.name)
+            if(estado.esEstadoFinal){
+                g.getVertice(estado.name).SetEstadoFinal(true)
+            }
+        })
+        transiciones.forEach(transicion => {
+            g.ingresarArista(transicion.from, transicion.to, transicion.text)
+        })
+
        
         diagram.nodeTemplate = $(go.Node, "Auto",
         $(go.Shape, "Circle", { fill: "#00FFB5", strokeWidth: 2, stroke: "black" }),
@@ -89,6 +102,31 @@ document.addEventListener("DOMContentLoaded", function () {
         })
         const texto = document.querySelector("#estadosFinales")
         texto.innerHTML = `<span class="fw-bold">Estados finales del autómata:</span> ${text}`
+
+    })
+
+    document.querySelector("#probarCadena").addEventListener("click", function () {
+       
+        if(g.listaVertices.length == 0){
+            alert("El autómata no tiene estados")
+        }
+
+        if(g.esAFND()) {
+            alert("El autómata no es un AFD")
+            return
+        } else {
+            
+            //* verificamos que la cadena no tenga caracteres que no estén en el alfabeto
+            const cadena = document.querySelector("#cadenaText").value
+
+            if(cadena.match(/[^01]/g)) {
+                alert("La cadena tiene caracteres que no están en el alfabeto (0,1)")
+                return
+            } else {
+               g.recorrerAutomata(cadena)
+            }
+
+        }
 
     })
 })
