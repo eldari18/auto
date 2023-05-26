@@ -204,6 +204,7 @@ class Grafo {
     //* MÉTODO RECURSIVO ENCARGADO DE VERIFICAR SI LA CADENA CUMPLE O NO *//
     cambiarEstado(estadoActual, posicionActual, cadenaArr,) {
         //* VERIFICAMOS SI HEMOS LLEGADO AL FINAL DE LA CADENA *//
+        console.log(estadoActual.GetDato() + " " + posicionActual + " " + cadenaArr.length)
         if (posicionActual == cadenaArr.length) {
             if (estadoActual.estadoFinal) {
                 console.log('cadena válida')
@@ -213,6 +214,13 @@ class Grafo {
                 alert('cadena inválida')
             }
             return
+        } else {
+            //* si el estado actual no tiene aristas
+            if (estadoActual.ListaAdyacentes.length == 0) {
+                console.log('cadena inválida')
+                alert('cadena inválida')
+                return
+            }
         }
 
         //* OBTENEMOS EL SIGUIENTE ESTADO A TRAVÉS DE LA TRANSICIÓN CORRESPONDIENTE *//
@@ -222,7 +230,7 @@ class Grafo {
                 siguienteEstado = arista.Destino
                 //* LLAMAMOS RECURSIVAMENTE AL MÉTODO CON EL SIGUIENTE ESTADO Y LA SIGUIENTE POSICIÓN DE LA CADENA *//
                 this.cambiarEstado(siguienteEstado, posicionActual + 1, cadenaArr)
-            }
+            } 
         })
     }
 
