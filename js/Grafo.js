@@ -10,7 +10,6 @@ class Grafo {
         this.visitadosCp = []
         this.visitadosCa = []
         this.adyacencias = {}
-        this.visitadosCKruskal = []
         this.repetidos = 0
         this.obstruidos = []
         this.aristasAmplitud = []
@@ -83,7 +82,6 @@ class Grafo {
         this.visitadosCp = []
         this.visitadosCa = []
         this.adyacencias = {}
-        this.visitadosCKruskal = []
         this.repetidos = 0
         this.obstruidos = []
         this.aristasAmplitud = []
@@ -103,12 +101,6 @@ class Grafo {
             }
         }
         return aristas
-    }
-
-    mostrarAristas() {
-        for (let i = 0;i < this.listaAristas.length;i++) {
-            console.log(`Origen: ${this.listaAristas[i].Origen.GetDato()} Destino: ${this.listaAristas[i].Destino.GetDato()} Peso: ${this.listaAristas[i].Peso}`)
-        }
     }
 
     GetNombreVertices() {
@@ -143,12 +135,6 @@ class Grafo {
         }
 
         return aristas
-    }
-
-    mostrarAristas() {
-        for (let i = 0;i < this.listaAristas.length;i++) {
-            console.log(`Origen: ${this.listaAristas[i].Origen.GetDato()} Destino: ${this.listaAristas[i].Destino.GetDato()} Peso: ${this.listaAristas[i].Peso}`)
-        }
     }
 
     getNombreVertices() {

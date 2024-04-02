@@ -61,7 +61,7 @@ document.addEventListener("DOMContentLoaded", function () {
         g.reiniciarGrafo()
         estados.forEach(estado => {
             g.ingresarVertices(estado.name)
-            if(estado.esEstadoFinal){
+            if (estado.esEstadoFinal) {
                 g.getVertice(estado.name).SetEstadoFinal(true)
             }
         })
@@ -69,21 +69,21 @@ document.addEventListener("DOMContentLoaded", function () {
             g.ingresarArista(transicion.from, transicion.to, transicion.text)
         })
 
-       
+
         diagram.nodeTemplate = $(go.Node, "Auto",
-        $(go.Shape, "Circle", { fill: "#00FFB5", strokeWidth: 2, stroke: "black" }),
-        $(go.TextBlock, { margin: 8, font: "bold 12 px sans-serif" }, new go.Binding("text", "name"))
+            $(go.Shape, "Circle", { fill: "#00FFB5", strokeWidth: 2, stroke: "black" }),
+            $(go.TextBlock, { margin: 8, font: "bold 12 px sans-serif" }, new go.Binding("text", "name"))
         )
         diagram.linkTemplate =
-        go.GraphObject.make(go.Link,
-        {
-            curve: go.Link.Bezier, 
-            routing: go.Link.AvoidsNodes, 
-        },
-        go.GraphObject.make(go.Shape, { stroke: "white" }),
-        go.GraphObject.make(go.Shape, { toArrow: "OpenTriangle", stroke: "white", fill: "white" }),
-        go.GraphObject.make(go.TextBlock, { stroke: "white", font: "bold 12px sans-serif" }, new go.Binding("text", "text"))
-        );
+            go.GraphObject.make(go.Link,
+                {
+                    curve: go.Link.Bezier,
+                    routing: go.Link.AvoidsNodes,
+                },
+                go.GraphObject.make(go.Shape, { stroke: "white" }),
+                go.GraphObject.make(go.Shape, { toArrow: "OpenTriangle", stroke: "white", fill: "white" }),
+                go.GraphObject.make(go.TextBlock, { stroke: "white", font: "bold 12px sans-serif" }, new go.Binding("text", "text"))
+            );
 
         diagram.model = $(go.GraphLinksModel, {
             nodeDataArray: estados,
@@ -105,29 +105,37 @@ document.addEventListener("DOMContentLoaded", function () {
 
     })
 
-    document.querySelector("#probarCadena").addEventListener("click", function () {
-       
-        if(g.listaVertices.length == 0){
-            alert("El autómata no tiene estados")
-        }
+    function separarCadenaEnLista(cadena) {
+        // Eliminamos los paréntesis al principio y al final
+        const cadenaLimpia = cadena.slice(1, -1);
+    
+        // Dividimos la cadena utilizando el patrón ")"
+        const elementos = cadenaLimpia.split(")");
+    
+        // Agregamos el paréntesis ")" al final de cada elemento
+        const lista = elementos.map((elemento) => elemento + ")");
+    
+        return lista;
+    }
 
-        if(g.esAFND()) {
-            alert("El autómata no es un AFD")
-            return
+    document.querySelector("#probarExp").addEventListener("click", function () {
+
+        //* verificamos que la cadena no tenga caracteres que no estén en el alfabeto
+        const cadena = document.querySelector("#expText").value
+
+        if(cadena ==''){
+            alert("No se ha ingresado ninguna expresion")
         } else {
-            
-            //* verificamos que la cadena no tenga caracteres que no estén en el alfabeto
-            const cadena = document.querySelector("#cadenaText").value
-
-            if(cadena.match(/[^01]/g)) {
-                alert("La cadena tiene caracteres que no están en el alfabeto (0,1)")
-                return
-            } else {
-               g.recorrerAutomata(cadena)
-            }
-
+             if (!(cadena.match(/^(?!.*\+\+)(?!.*\*\*)[01*()?+]+$/))) {
+            alert("La cadena tiene caracteres que no están en el alfabeto {0,1} o hay {*,+} seguidos")
+        } 
+        else {
+            alert("La expresion fue aceptada")
+            console.log(separarCadenaEnLista(cadena))
+        }
         }
 
+       
     })
 })
 
@@ -158,34 +166,34 @@ function createArrayOfLinksGrafo() {
 }
 
 function mostrar() {
-   
+
     diagram.model = $(go.GraphLinksModel, {
         nodeDataArray: createArrayOfNodesGrafo(),
         linkDataArray: createArrayOfLinksGrafo()
     })
 
     diagram.layout = $(go.LayeredDigraphLayout, {
-        direction: 0,  
-        layerSpacing: 50,  
-        columnSpacing: 50 
+        direction: 0,
+        layerSpacing: 50,
+        columnSpacing: 50
     })
 
 
     diagram.nodeTemplate = $(go.Node, "Auto",
-        $(go.Shape, "Circle", { fill: "#00FFB5", strokeWidth: 2, stroke: "black" }),
+        $(go.Shape, "Circle", { fill: "#FFFF00", strokeWidth: 2, stroke: "black" }),
         $(go.TextBlock, { margin: 8, font: "bold 12 px sans-serif" }, new go.Binding("text", "name"))
     )
     diagram.linkTemplate =
-    go.GraphObject.make(go.Link,
-      {
-        curve: go.Link.Bezier, 
-        routing: go.Link.AvoidsNodes, 
-      },
-      go.GraphObject.make(go.Shape, { stroke: "white" }),
-      go.GraphObject.make(go.Shape, { toArrow: "OpenTriangle", stroke: "white", fill: "white" }),
-      go.GraphObject.make(go.TextBlock, { stroke: "white", font: "bold 12px sans-serif" }, new go.Binding("text", "text"))
-    );
-  
+        go.GraphObject.make(go.Link,
+            {
+                curve: go.Link.Bezier,
+                routing: go.Link.AvoidsNodes,
+            },
+            go.GraphObject.make(go.Shape, { stroke: "white" }),
+            go.GraphObject.make(go.Shape, { toArrow: "OpenTriangle", stroke: "white", fill: "white" }),
+            go.GraphObject.make(go.TextBlock, { stroke: "white", font: "bold 12px sans-serif" }, new go.Binding("text", "text"))
+        );
+
     const estadosFinales = g.getEstadosFinales()
     let text = ""
     estadosFinales.forEach(estado => {
@@ -194,7 +202,6 @@ function mostrar() {
     const texto = document.querySelector("#estadosFinales")
     texto.innerHTML = `<span class="fw-bold">Estados finales del autómata:</span> ${text}`
 }
-
 
 
 
