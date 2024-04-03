@@ -141,16 +141,25 @@ document.addEventListener("DOMContentLoaded", () => {
                     if (item.includes("+")) {
                         let newItem = item.replace("+", ",");
                         g.ingresarArista("q" + (counter), "q" + (counter), newItem.slice(0, -2));
+                        console.log(item);
                     } else {
                         g.ingresarArista("q" + (counter), "q" + (counter), exp[counter].slice(0, -2));
                     }
                 }
 
-              
+
 
                 if (counter >= 1 && item.endsWith(")")) {
-                        g.ingresarVertices("q" + counter)
-                        g.IngresarArista("q" + (counter - 1), "q" + (counter), item)
+
+                    if (item.includes("+") && !(item.endsWith("*"))) {
+                        let items = item.split("+")
+                        for (let i = 0; i < items.length; i++) {
+                            g.ingresarVertices("q" + (counter + i))
+                            g.ingresarArista("q" + (counter-1), "q" + (counter + i), items[i]);
+                        }
+                    }
+                    g.ingresarVertices("q" + counter)
+                    g.IngresarArista("q" + (counter - 1), "q" + (counter), item)
                 }
 
                 if (item.length == 1 && item != "*" && item != "+") {
