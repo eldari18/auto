@@ -105,7 +105,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     })
 
-    function separarCadenaEnLista(cadena) {
         // Eliminamos los paréntesis al principio y al final
         const cadenaLimpia = cadena.slice(1, -1);
     
