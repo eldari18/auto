@@ -1,11 +1,13 @@
 import go from 'gojs'
 import Grafo from './Grafo'
+import { forEach, forIn } from 'lodash'
 
 
 let g = new Grafo()
 
 let $ = go.GraphObject.make
 let diagram = null
+let counter = 0
 
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -105,15 +107,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     })
 
-        // Eliminamos los paréntesis al principio y al final
-        const cadenaLimpia = cadena.slice(1, -1);
-    
+    function separarCadenaEnLista (cadena) {
         // Dividimos la cadena utilizando el patrón ")"
-        const elementos = cadenaLimpia.split(")");
+        const elementos = cadena.split(")");
     
         // Agregamos el paréntesis ")" al final de cada elemento
         const lista = elementos.map((elemento) => elemento + ")");
-    
         return lista;
     }
 
@@ -124,17 +123,40 @@ document.addEventListener("DOMContentLoaded", () => {
         console.log(cadena);
         if(cadena ==''){
             alert("No se ha ingresado ninguna expresion")
-        } else {
-             if (!(cadena.match(/^(?!.*\+\+)(?!.*\*\*)[01*()?+]+$/))) {
-            alert("La cadena tiene caracteres que no están en el alfabeto {0,1} o hay {*,+} seguidos")
-        } 
+        } else if (!(cadena.match(/^(?!.*\+\+)(?!.*\*\*)[01*()?+]+$/))) {
+            alert("La cadena tiene caracteres que no están en el alfabeto {0,1} o hay {*,+} seguidos") 
+        }
         else {
-            alert("La expresion fue aceptada")
-            console.log(separarCadenaEnLista(cadena))
+            counter = 0
+             let exp = cadena.split(")")
+            console.log(exp.length);
+            g.reiniciarGrafo()
+            g.ingresarVertices("q" + counter)
+            do {
+                let item = exp[counter]
+                item = item.replaceAll("(", "")
+                console.log(item);
+                if (item.startsWith("*")) {
+                    g.ingresarArista("q" + (counter), "q"  + (counter), exp[counter - 1].replaceAll("(", ""))
+                }
+                if (item.length == 1 && item != "*" && item != "+") {
+                    g.ingresarVertices("q" + (counter + 1))
+                    g.ingresarArista("q" + (counter), "q"  + (counter + 1), item)
+                }
+                if (item.length > 1) {
+                    let items = item.split("+")
+                    for (let i = 0; i < items.length; i++) {
+                        g.ingresarVertices("q" + (counter + i + 1))                        
+                    }
+                }
+                counter += 1
+                
+            } while (counter < exp.length) 
+            mostrar()
         }
         }
 
-    })
+    )
 })
 
 function createArrayOfNodesGrafo() {
