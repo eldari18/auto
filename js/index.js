@@ -1,6 +1,5 @@
 import go from 'gojs'
 import Grafo from './Grafo'
-import Vertice from './Vertice'
 
 
 let g = new Grafo()
@@ -8,11 +7,11 @@ let g = new Grafo()
 let $ = go.GraphObject.make
 let diagram = null
 
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", () => {
 
     diagram = $(go.Diagram, "diagram")
 
-    document.querySelector("#a1").addEventListener("click", function () {
+    document.querySelector("#a1").addEventListener("click", () => {
         g.reiniciarGrafo()
         g.ingresarVertices("A")
         g.ingresarVertices("B")
@@ -26,7 +25,7 @@ document.addEventListener("DOMContentLoaded", function () {
         mostrar()
     })
 
-    document.querySelector("#a2").addEventListener("click", function () {
+    document.querySelector("#a2").addEventListener("click", () => {
         g.reiniciarGrafo()
         g.ingresarVertices("A")
         g.ingresarVertices("B")
@@ -55,7 +54,7 @@ document.addEventListener("DOMContentLoaded", function () {
         mostrar()
     })
 
-    document.querySelector("#convertir").addEventListener("click", function () {
+    document.querySelector("#convertir").addEventListener("click", () => {
         const { estados, transiciones } = g.AFNDaAFD2DinamicoLambda()
 
         //* AHORA EL NUEVO GRAFO ES EL AUTÓMATA FINITO DETERMINISTA
@@ -106,91 +105,41 @@ document.addEventListener("DOMContentLoaded", function () {
 
     })
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////
     function separarCadenaEnLista(cadena) {
         // Eliminamos los paréntesis al principio y al final
-        // Dividimos la cadena utilizando el patrón "("
-        const elementos = cadena.split("(");
-        const lista = elementos.map((elemento) => elemento);
-        let anterior = ""
-        const simbolos = ['*', '+', '?']
-        const lenguaje = ['0', '1']
-        const paren = ")"
-        let numEstado = 0
-        lista.shift();
-        let primero = true
-        g.reiniciarGrafo()
-        for (let i = 0; i < lista.length; i++) {
-            for (let caracter of lista[i]) {
-                if (primero) {
-                    let estadooo = "{{numEstado}}";
-                    g.ingresarVertices("{{numEstado}}")
-                    primero = false
-                    numEstado++;
-                }
-                if (simbolos.includes(caracter)) {
-                    console.log(caracter + " simbol");
-                }
-                if (lenguaje.includes(caracter)) {
-
-                    console.log(caracter + " lenguage");
-                }
-                if (caracter == paren) {
-                    console.log(caracter + " paren");
-                }
-            }
-        }
+        const cadenaLimpia = cadena.slice(1, -1);
+    
+        // Dividimos la cadena utilizando el patrón ")"
+        const elementos = cadenaLimpia.split(")");
+    
+        // Agregamos el paréntesis ")" al final de cada elemento
+        const lista = elementos.map((elemento) => elemento + ")");
+    
         return lista;
-
     }
 
-
-
-    document.querySelector("#probarExp").addEventListener("click", function () {
+    document.querySelector("#probarExp").addEventListener("click", () => {
 
         //* verificamos que la cadena no tenga caracteres que no estén en el alfabeto
         const cadena = document.querySelector("#expText").value
-
-        let anterior = ""
-        let estadoFinalMomentaneo = Vertice
-
-
-        if (cadena == '') {
+        console.log(cadena);
+        if(cadena ==''){
             alert("No se ha ingresado ninguna expresion")
         } else {
-            if (!(cadena.match(/^(?!.*\+\+)(?!.*\*\*)[01*()?+]+$/))) {
-                alert("La cadena tiene caracteres que no están en el alfabeto {0,1} o hay {*,+} seguidos")
-            }
-            else {
-                let cadenaPorParentesis = separarCadenaEnLista(cadena)
-
-                console.log(cadenaPorParentesis)
-
-    
-                g.ingresarVertices("q")
-                g.ingresarVertices("B")
-                g.ingresarVertices("C")
-                g.getVertice("C").SetEstadoFinal(true)
-                g.ingresarArista("q", "q", 1)
-                g.ingresarArista("q", "q", 0)
-                g.ingresarArista("q", "B", 0)
-                g.ingresarArista("B", "C", 0)
-                mostrar()
-
-
-            }
+             if (!(cadena.match(/^(?!.*\+\+)(?!.*\*\*)[01*()?+]+$/))) {
+            alert("La cadena tiene caracteres que no están en el alfabeto {0,1} o hay {*,+} seguidos")
+        } 
+        else {
+            alert("La expresion fue aceptada")
+            console.log(separarCadenaEnLista(cadena))
         }
-
-
-
+        }
 
     })
 })
 
 function createArrayOfNodesGrafo() {
-
     const nodes = g.getNombreVertices()
-
     const nodeDataArray = []
     nodes.forEach(node => {
         nodeDataArray.push({ key: node, name: node })
@@ -200,17 +149,12 @@ function createArrayOfNodesGrafo() {
 }
 
 function createArrayOfLinksGrafo() {
-
     const links = g.getAristas()
-
     const linkDataArray = []
-
     links.forEach(link => {
         linkDataArray.push({ from: link.Origen.dato, to: link.Destino.dato, text: `${link.GetPeso()}` })
     })
-
     return linkDataArray
-
 }
 
 function mostrar() {
@@ -228,8 +172,8 @@ function mostrar() {
 
 
     diagram.nodeTemplate = $(go.Node, "Auto",
-        $(go.Shape, "Circle", { fill: "#FFFF00", strokeWidth: 4, stroke: "white" }),
-        $(go.TextBlock, { margin: 8, font: "bold 20 px sans-serif" }, new go.Binding("text", "name"))
+        $(go.Shape, "Circle", { fill: "#FFFF00", strokeWidth: 2, stroke: "black" }),
+        $(go.TextBlock, { margin: 8, font: "bold 12 px sans-serif" }, new go.Binding("text", "name"))
     )
     diagram.linkTemplate =
         go.GraphObject.make(go.Link,
