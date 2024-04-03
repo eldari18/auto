@@ -1,6 +1,7 @@
 import go from 'gojs'
 import Grafo from './Grafo'
 import { forEach, forIn } from 'lodash'
+import Vertice from './Vertice'
 
 
 let g = new Grafo()
@@ -107,10 +108,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     })
 
-    function separarCadenaEnLista (cadena) {
+    function separarCadenaEnLista(cadena) {
         // Dividimos la cadena utilizando el patrón ")"
         const elementos = cadena.split(")");
-    
+
         // Agregamos el paréntesis ")" al final de cada elemento
         const lista = elementos.map((elemento) => elemento + ")");
         return lista;
@@ -121,42 +122,49 @@ document.addEventListener("DOMContentLoaded", () => {
         //* verificamos que la cadena no tenga caracteres que no estén en el alfabeto
         const cadena = document.querySelector("#expText").value
         console.log(cadena);
-        if(cadena ==''){
+        if (cadena == '') {
             alert("No se ha ingresado ninguna expresion")
         } else if (!(cadena.match(/^(?!.*\+\+)(?!.*\*\*)[01*()?+]+$/))) {
-            alert("La cadena tiene caracteres que no están en el alfabeto {0,1} o hay {*,+} seguidos") 
+            alert("La cadena tiene caracteres que no están en el alfabeto {0,1} o hay {*,+} seguidos")
         }
         else {
             counter = 0
-             let exp = cadena.split(")")
-            console.log(exp.length);
+            let exp = cadena.split("(")
+            exp.shift()
             g.reiniciarGrafo()
             g.ingresarVertices("q" + counter)
             do {
                 let item = exp[counter]
-                item = item.replaceAll("(", "")
-                console.log(item);
-                if (item.startsWith("*")) {
-                    g.ingresarArista("q" + (counter), "q"  + (counter), exp[counter - 1].replaceAll("(", ""))
+                if (item.endsWith("*")) {
+                    if (item.includes("+")) {
+                        let newItem = item.replace("+", ",");
+                        g.ingresarArista("q" + (counter), "q" + (counter), newItem.slice(0, -2));
+                    } else {
+                        g.ingresarArista("q" + (counter), "q" + (counter), exp[counter].slice(0, -2));
+                    }
                 }
+
                 if (item.length == 1 && item != "*" && item != "+") {
                     g.ingresarVertices("q" + (counter + 1))
-                    g.ingresarArista("q" + (counter), "q"  + (counter + 1), item)
+                    g.ingresarArista("q" + (counter), "q" + (counter + 1), item)
                 }
-                if (item.length > 1) {
+
+
+                if (item.includes("+") && !(item.endsWith("*"))) {
                     let items = item.split("+")
                     for (let i = 0; i < items.length; i++) {
                         g.ingresarVertices("q" + (counter + i + 1))
-                        console.log(items[i]); 
-                        g.ingresarArista("q" + (counter), "q" + (counter + i + 1), items[i])                       
+                        console.log(g.getVertice("q" + (counter + i + 1)));
+                        g.ingresarArista("q" + (counter), "q" + (counter + i + 1), items[i]);
                     }
                 }
+
+
                 counter += 1
-                
-            } while (counter < exp.length) 
+            } while (counter < exp.length)
             mostrar()
         }
-        }
+    }
 
     )
 })
