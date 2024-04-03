@@ -131,10 +131,12 @@ document.addEventListener("DOMContentLoaded", () => {
             counter = 0
             let exp = cadena.split("(")
             exp.shift()
+            let estadosFinales = []
             g.reiniciarGrafo()
             g.ingresarVertices("q" + counter)
             do {
                 let item = exp[counter]
+                console.log(item);
                 if (item.endsWith("*")) {
                     if (item.includes("+")) {
                         let newItem = item.replace("+", ",");
@@ -144,17 +146,32 @@ document.addEventListener("DOMContentLoaded", () => {
                     }
                 }
 
+                if (counter >= 1 && item.endsWith(")")) {
+                    if (g.getVertice("q" + counter)) {
+                        g.IngresarArista("q" + (counter - 1), "q" + (counter), item)
+                    } else {
+                        g.ingresarVertices("q" + counter)
+                        g.IngresarArista("q" + (counter - 1), "q" + (counter), item)
+                    }
+                }
+                // if (item.endsWith(")")) {
+                //     if (g.getVertice("q" + counter)) {
+                //         g.IngresarArista("q" + (counter), "q" + (counter + 1), item)
+                //     } else {
+                //         g.ingresarVertices("q" + counter)
+                //         g.IngresarArista("q" + (counter), "q" + (counter + 1), item)
+                //     }
+                // }
+
                 if (item.length == 1 && item != "*" && item != "+") {
                     g.ingresarVertices("q" + (counter + 1))
                     g.ingresarArista("q" + (counter), "q" + (counter + 1), item)
                 }
 
-
                 if (item.includes("+") && !(item.endsWith("*"))) {
                     let items = item.split("+")
                     for (let i = 0; i < items.length; i++) {
                         g.ingresarVertices("q" + (counter + i + 1))
-                        console.log(g.getVertice("q" + (counter + i + 1)));
                         g.ingresarArista("q" + (counter), "q" + (counter + i + 1), items[i]);
                     }
                 }
