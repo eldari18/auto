@@ -146,7 +146,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (item.length > 1) {
                     let items = item.split("+")
                     for (let i = 0; i < items.length; i++) {
-                        g.ingresarVertices("q" + (counter + i + 1))                        
+                        g.ingresarVertices("q" + (counter + i + 1))
+                        console.log(items[i]); 
+                        g.ingresarArista("q" + (counter), "q" + (counter + i + 1), items[i])                       
                     }
                 }
                 counter += 1
