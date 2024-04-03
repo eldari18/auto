@@ -12,6 +12,8 @@ class Grafo {
         this.adyacencias = {}
         this.repetidos = 0
         this.obstruidos = []
+        this.estadosFinales=[]
+        this.estadoInicial= 0
         this.aristasAmplitud = []
         this.estadosAuxiliar = []
     }
@@ -84,6 +86,8 @@ class Grafo {
         this.adyacencias = {}
         this.repetidos = 0
         this.obstruidos = []
+        this.estadosFinales=[]
+        this.estadoInicial=0
         this.aristasAmplitud = []
         this.estadosAuxiliar = []
     }
