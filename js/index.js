@@ -146,22 +146,12 @@ document.addEventListener("DOMContentLoaded", () => {
                     }
                 }
 
+              
+
                 if (counter >= 1 && item.endsWith(")")) {
-                    if (g.getVertice("q" + counter)) {
-                        g.IngresarArista("q" + (counter - 1), "q" + (counter), item)
-                    } else {
                         g.ingresarVertices("q" + counter)
                         g.IngresarArista("q" + (counter - 1), "q" + (counter), item)
-                    }
                 }
-                // if (item.endsWith(")")) {
-                //     if (g.getVertice("q" + counter)) {
-                //         g.IngresarArista("q" + (counter), "q" + (counter + 1), item)
-                //     } else {
-                //         g.ingresarVertices("q" + counter)
-                //         g.IngresarArista("q" + (counter), "q" + (counter + 1), item)
-                //     }
-                // }
 
                 if (item.length == 1 && item != "*" && item != "+") {
                     g.ingresarVertices("q" + (counter + 1))
